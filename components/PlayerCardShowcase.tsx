@@ -54,7 +54,7 @@ export default function PlayerCardShowcase() {
 
               <div>
                 <h3 className="text-xl font-extrabold text-slate-50 flex items-center gap-1.5">
-                  Lucas "Goleador"
+                  Lucas &quot;Goleador&quot;
                 </h3>
                 <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
                   <svg className="w-3.5 h-3.5 text-amber-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
