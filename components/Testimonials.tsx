@@ -24,13 +24,13 @@ const testimonials = [
 
 export default function Testimonials() {
   return (
-    <section className="w-full py-24 px-4">
+    <section className="w-full py-24 px-4 bg-slate-50">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-emerald-400 uppercase tracking-wider mb-3">
+          <p className="text-sm font-semibold text-[var(--color-brasil-blue)] uppercase tracking-wider mb-3">
             Depoimentos
           </p>
-          <h2 className="text-3xl md:text-4xl font-black tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-slate-900">
             Atletas que já estão jogando no nível PRO
           </h2>
         </div>
@@ -39,16 +39,16 @@ export default function Testimonials() {
           {testimonials.map((t, idx) => (
             <div
               key={idx}
-              className="flex flex-col p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
+              className="flex flex-col p-6 rounded-2xl bg-white border border-slate-100 shadow-sm"
             >
-              <Quote className="w-5 h-5 text-amber-500/40 mb-3" />
-              <p className="text-sm text-slate-300 leading-relaxed mb-6 flex-1">
-                {t.quote}
+              <Quote className="w-5 h-5 text-[var(--color-brasil-yellow)]/60 mb-3" />
+              <p className="text-sm text-slate-600 leading-relaxed mb-6 flex-1">
+                &ldquo;{t.quote}&rdquo;
               </p>
-              <div className="border-t border-white/[0.06] pt-4">
-                <p className="text-sm font-bold text-slate-100">{t.name}</p>
-                <p className="text-xs text-slate-500">{t.role}</p>
-                <p className="text-xs text-amber-400/70 mt-0.5">{t.followers}</p>
+              <div className="border-t border-slate-100 pt-4">
+                <p className="text-sm font-bold text-slate-800">{t.name}</p>
+                <p className="text-xs text-slate-400">{t.role}</p>
+                <p className="text-xs text-[var(--color-brasil-green)] font-medium mt-0.5">{t.followers}</p>
               </div>
             </div>
           ))}
