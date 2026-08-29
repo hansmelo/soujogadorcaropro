@@ -12,13 +12,13 @@ export default function Hero() {
       <div className="relative flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-50 border border-amber-200 mb-8">
         <span className="w-2 h-2 rounded-full bg-[var(--color-gold)] animate-live-pulse" />
         <span className="text-xs font-medium text-amber-900">
-          +1.200 atletas já criaram seu Mídia Kit
+          +1.200 atletas já criaram seu Passe Digital
         </span>
       </div>
 
       {/* Headline */}
       <h1 className="relative text-4xl sm:text-5xl md:text-7xl font-black tracking-tight max-w-4xl leading-[1.08] mb-6 text-[var(--color-navy)]">
-        Seu Mídia Kit de Futebol.{' '}
+        Seu Passe Digital.{' '}
         <span className="text-[var(--color-gold)]">
           Seu Próximo Patrocínio.
         </span>
@@ -35,7 +35,7 @@ export default function Hero() {
           href="#cta"
           className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 font-bold text-white bg-[var(--color-gold)] rounded-xl hover:bg-[var(--color-gold-hover)] transition-all group shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30"
         >
-          Criar Meu Mídia Kit — Grátis
+          Criar Meu Passe — Grátis
           <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
         </a>
         <a

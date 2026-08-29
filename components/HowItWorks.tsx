@@ -21,7 +21,7 @@ const steps = [
     icon: HandCoins,
     color: 'bg-[var(--color-navy)]',
     title: 'Receba Propostas',
-    description: 'Marcas locais visualizam seu Mídia Kit com dados reais e entram em contato diretamente pelo WhatsApp.',
+    description: 'Marcas locais visualizam seu Passe com dados reais e entram em contato diretamente pelo WhatsApp.',
   },
 ];
 

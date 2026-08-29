@@ -12,7 +12,7 @@ const features = [
     icon: Target,
     iconBg: 'bg-[var(--color-gold)]',
     title: 'Conexão com Marcas Locais',
-    description: 'Barbearias, academias, suplementos, lojas de esporte. Seu Mídia Kit é formatado para o mercado que importa: o da sua cidade.',
+    description: 'Barbearias, academias, suplementos, lojas de esporte. Seu Passe Digital é formatado para o mercado que importa: o da sua cidade.',
   },
   {
     icon: Sparkles,

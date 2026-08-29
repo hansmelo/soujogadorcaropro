@@ -3,7 +3,7 @@ import { Quote } from 'lucide-react';
 
 const testimonials = [
   {
-    quote: 'Em duas semanas fechei meu primeiro contrato com uma academia do bairro. O Mídia Kit fez toda a diferença.',
+    quote: 'Em duas semanas fechei meu primeiro contrato com uma academia do bairro. O Passe Digital fez toda a diferença.',
     name: 'Gabriel Santos',
     role: 'Atacante · Sub-20 · São Paulo',
     followers: '12K seguidores',

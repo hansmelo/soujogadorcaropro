@@ -29,7 +29,7 @@ export default function FooterCTA() {
           href="#"
           className="group flex items-center gap-3 px-8 py-5 text-lg font-extrabold text-[var(--color-navy)] bg-white rounded-xl hover:bg-[var(--color-gold)] hover:text-white transition-all shadow-xl hover:shadow-2xl hover:scale-[1.02] mb-4"
         >
-          Criar Meu Mídia Kit — Grátis
+          Criar Meu Passe — Grátis
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
         </a>
 
