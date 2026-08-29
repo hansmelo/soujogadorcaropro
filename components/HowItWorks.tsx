@@ -5,21 +5,21 @@ const steps = [
   {
     number: '01',
     icon: UserPlus,
-    color: 'bg-[var(--color-brasil-green)]',
+    color: 'bg-[var(--color-navy)]',
     title: 'Crie seu Perfil',
     description: 'Conecte seu Instagram e preencha seus dados de atleta em menos de 2 minutos. Sem formulários intermináveis.',
   },
   {
     number: '02',
     icon: Share2,
-    color: 'bg-[var(--color-brasil-yellow-warm)]',
+    color: 'bg-[var(--color-gold)]',
     title: 'Compartilhe seu Link',
     description: 'Receba uma página profissional com URL exclusiva. Envie para marcas da sua cidade ou coloque na bio.',
   },
   {
     number: '03',
     icon: HandCoins,
-    color: 'bg-[var(--color-brasil-blue)]',
+    color: 'bg-[var(--color-navy)]',
     title: 'Receba Propostas',
     description: 'Marcas locais visualizam seu Mídia Kit com dados reais e entram em contato diretamente pelo WhatsApp.',
   },
@@ -30,10 +30,10 @@ export default function HowItWorks() {
     <section id="como-funciona" className="w-full py-24 px-4 bg-slate-50">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-[var(--color-brasil-green)] uppercase tracking-wider mb-3">
+          <p className="text-sm font-semibold text-[var(--color-gold)] uppercase tracking-wider mb-3">
             Simples como um gol de placa
           </p>
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-[var(--color-navy)]">
             3 passos para o seu primeiro patrocínio
           </h2>
         </div>

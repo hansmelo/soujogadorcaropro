@@ -4,19 +4,19 @@ import { BarChart3, Target, Sparkles } from 'lucide-react';
 const features = [
   {
     icon: BarChart3,
-    iconBg: 'bg-[var(--color-brasil-green)]',
+    iconBg: 'bg-[var(--color-navy)]',
     title: 'Dados que Convencem',
     description: 'Seus números de engajamento, alcance e demografia são puxados automaticamente e apresentados de forma que qualquer marca entenda seu valor.',
   },
   {
     icon: Target,
-    iconBg: 'bg-[var(--color-brasil-yellow-warm)]',
+    iconBg: 'bg-[var(--color-gold)]',
     title: 'Conexão com Marcas Locais',
     description: 'Barbearias, academias, suplementos, lojas de esporte. Seu Mídia Kit é formatado para o mercado que importa: o da sua cidade.',
   },
   {
     icon: Sparkles,
-    iconBg: 'bg-[var(--color-brasil-blue)]',
+    iconBg: 'bg-[var(--color-navy)]',
     title: 'Roteiros de Conteúdo com IA',
     description: 'Receba ideias diárias de conteúdo para TikTok e Reels adaptadas à sua posição, temporada e estilo de jogo.',
   },
@@ -26,12 +26,12 @@ export default function Features() {
   return (
     <section id="recursos" className="py-24 px-4 max-w-5xl mx-auto w-full">
       <div className="text-center max-w-2xl mx-auto mb-16">
-        <p className="text-sm font-semibold text-[var(--color-brasil-green)] uppercase tracking-wider mb-3">
+        <p className="text-sm font-semibold text-[var(--color-gold)] uppercase tracking-wider mb-3">
           Recursos
         </p>
-        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-slate-900">
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight text-[var(--color-navy)]">
           Tudo para jogar no{' '}
-          <span className="text-[var(--color-brasil-green)]">nível PRO</span>
+          <span className="text-[var(--color-gold)]">nível PRO</span>
         </h2>
       </div>
 

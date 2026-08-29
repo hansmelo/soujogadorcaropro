@@ -1,12 +1,11 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-brasil-green: #009c3b;
-  --color-brasil-green-dark: #007a2f;
-  --color-brasil-yellow: #ffdf00;
-  --color-brasil-yellow-warm: #f5c800;
-  --color-brasil-blue: #002776;
-  --color-brasil-blue-light: #0040a0;
+  --color-navy: #1e3a5f;
+  --color-navy-dark: #112239;
+  --color-gold: #d4a017;
+  --color-gold-hover: #b88a10;
+  --color-gold-light: #fef3c7;
 
   --animate-live-pulse: live-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   --animate-float: float 6s ease-in-out infinite;

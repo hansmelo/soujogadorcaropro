@@ -52,15 +52,15 @@ export default function Calculator() {
   return (
     <section id="calculadora" className="w-full py-24 px-4 relative bg-slate-50">
       <div className="relative max-w-2xl mx-auto flex flex-col items-center">
-        <p className="text-sm font-semibold text-[var(--color-brasil-blue)] uppercase tracking-wider mb-3">
+        <p className="text-sm font-semibold text-[var(--color-gold)] uppercase tracking-wider mb-3">
           Calculadora de Passe
         </p>
 
-        <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-center text-slate-900">
-          Quanto vale sua <span className="text-[var(--color-brasil-green)]">imagem?</span>
+        <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-center text-[var(--color-navy)]">
+          Quanto vale sua <span className="text-[var(--color-gold)]">imagem?</span>
         </h2>
 
-        <p className="text-slate-500 text-center max-w-lg mb-10">
+        <p className="text-slate-600 text-center max-w-lg mb-10">
           Descubra o potencial de patrocínio da sua audiência no mercado esportivo local.
         </p>
 
@@ -68,14 +68,14 @@ export default function Calculator() {
           <input
             type="number"
             placeholder="Seus seguidores no Instagram"
-            className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[var(--color-brasil-green)] focus:ring-2 focus:ring-[var(--color-brasil-green)]/20 transition-all shadow-sm"
+            className="flex-1 bg-white border border-slate-200 rounded-xl px-4 py-3.5 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-[var(--color-gold)] focus:ring-2 focus:ring-[var(--color-gold)]/20 transition-all shadow-sm"
             value={followers}
             onChange={(e) => setFollowers(e.target.value)}
           />
           <button
             type="submit"
             disabled={isCalculating}
-            className="px-6 py-3.5 font-bold rounded-xl bg-[var(--color-brasil-green)] text-white hover:bg-[var(--color-brasil-green-dark)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait shrink-0 shadow-sm"
+            className="px-6 py-3.5 font-bold rounded-xl bg-[var(--color-gold)] text-white hover:bg-[var(--color-gold-hover)] transition-all flex items-center gap-2 disabled:opacity-50 disabled:cursor-wait shrink-0 shadow-sm"
           >
             <Zap className="w-4 h-4" />
             {isCalculating ? '...' : 'Calcular'}
@@ -83,36 +83,36 @@ export default function Calculator() {
         </form>
 
         {error && (
-          <div className="p-3.5 rounded-xl bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm flex items-center gap-2 max-w-md w-full">
-            <AlertCircle className="w-4 h-4 text-[var(--color-brasil-yellow-warm)] shrink-0" />
+          <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm flex items-center gap-2 max-w-md w-full">
+            <AlertCircle className="w-4 h-4 text-[var(--color-gold)] shrink-0" />
             {error}
           </div>
         )}
 
         {result && (
-          <div className="w-full max-w-md mt-2 p-6 rounded-2xl border border-emerald-200 bg-emerald-50 flex flex-col items-center animate-fade-in">
+          <div className="w-full max-w-md mt-2 p-6 rounded-2xl border border-[var(--color-gold)]/40 bg-amber-50/50 flex flex-col items-center animate-fade-in shadow-md">
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg">{result.emoji}</span>
-              <span className="text-xs font-bold text-[var(--color-brasil-green)] uppercase tracking-wider">{result.tier}</span>
+              <span className="text-xs font-bold text-[var(--color-gold)] uppercase tracking-wider">{result.tier}</span>
             </div>
 
-            <p className="text-3xl md:text-4xl font-black text-[var(--color-brasil-green)] my-2 flex items-center gap-2">
-              <TrendingUp className="w-6 h-6" />
+            <p className="text-3xl md:text-4xl font-black text-[var(--color-navy)] my-2 flex items-center gap-2">
+              <TrendingUp className="w-6 h-6 text-[var(--color-gold)]" />
               {fmt(result.min)} – {fmt(result.max)}
             </p>
             <p className="text-xs text-slate-500 font-medium">Potencial estimado por mês em patrocínios locais</p>
 
-            <div className="w-full mt-5 pt-4 border-t border-emerald-200 flex justify-around text-center text-xs text-slate-500">
+            <div className="w-full mt-5 pt-4 border-t border-amber-200/60 flex justify-around text-center text-xs text-slate-600">
               <div>
-                <span className="block text-slate-800 font-bold text-sm">2–5</span>
+                <span className="block text-[var(--color-navy)] font-bold text-sm">2–5</span>
                 Marcas Parceiras
               </div>
               <div>
-                <span className="block text-slate-800 font-bold text-sm">100%</span>
+                <span className="block text-[var(--color-navy)] font-bold text-sm">100%</span>
                 Autonomia
               </div>
               <div>
-                <span className="block text-slate-800 font-bold text-sm">R$ 0</span>
+                <span className="block text-[var(--color-navy)] font-bold text-sm">R$ 0</span>
                 Investimento
               </div>
             </div>
