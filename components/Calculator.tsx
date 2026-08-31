@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy } from 'lucide-react';
+import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles } from 'lucide-react';
 
 export default function Calculator() {
   // Required fields
@@ -339,13 +339,32 @@ export default function Calculator() {
 
             {/* Mode 1 Upsell */}
             {result.mode === 1 && (
-              <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-900 text-xs px-4 py-3 rounded-xl text-center shadow-sm max-w-sm">
+              <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-900 text-xs px-4 py-3 rounded-xl text-center shadow-sm max-w-sm w-full">
                 <p className="font-bold mb-1 flex items-center justify-center gap-1">
                   <Trophy className="w-3.5 h-3.5 text-[var(--color-gold)]" /> Destrave seu OVR Completo!
                 </p>
                 <p className="text-amber-800/80">Adicione seus dados de campo no formulário acima para aumentar seu Passe e liberar todas as estatísticas do card.</p>
               </div>
             )}
+
+            {/* Premium AI Upsell */}
+            <div className="mt-5 w-full max-w-sm bg-gradient-to-br from-[var(--color-navy)] to-[#0c1829] rounded-xl p-5 shadow-lg border border-[var(--color-gold)]/20 text-left relative overflow-hidden group">
+              <div className="absolute -right-6 -top-6 w-32 h-32 bg-[var(--color-gold)]/10 rounded-full blur-2xl group-hover:bg-[var(--color-gold)]/20 transition-all"></div>
+              
+              <div className="flex items-center gap-2 mb-2 relative z-10">
+                <Sparkles className="w-4 h-4 text-[var(--color-gold)]" />
+                <span className="text-[10px] font-black text-[var(--color-gold)] uppercase tracking-widest">Em Breve: Plano PRO</span>
+              </div>
+              
+              <p className="text-xs text-slate-300 font-medium leading-relaxed mb-4 relative z-10">
+                Cálculo <strong className="text-white">100% preciso</strong> auditado pela API do Instagram. <strong className="text-white">Inteligência Artificial</strong> para criar roteiros de vídeo e posts prontos para seus patrocinadores.
+              </p>
+              
+              <button className="w-full py-2.5 rounded-lg border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-[11px] uppercase tracking-wider font-bold hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-colors relative z-10">
+                Entrar na Lista VIP
+              </button>
+            </div>
+
           </div>
         )}
       </div>
