@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle } from 'lucide-react';
+import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield } from 'lucide-react';
 
 export default function Calculator() {
   // Required personal fields
@@ -20,7 +20,6 @@ export default function Calculator() {
   // Field data
   const [matches, setMatches] = useState('');
   const [goals, setGoals] = useState('');
-  const [seasonGoals, setSeasonGoals] = useState('');
   const [assists, setAssists] = useState('');
   const [trophies, setTrophies] = useState('');
 
@@ -115,7 +114,7 @@ export default function Calculator() {
     const ageScore = getAgeScore(aNum);
 
     // Check if field data is present (Mode 2)
-    const hasFieldData = matches || goals || seasonGoals || assists || trophies;
+    const hasFieldData = matches || goals || assists || trophies;
     
     let finalOVR = 0;
     let mode = 1;
@@ -140,17 +139,15 @@ export default function Calculator() {
       // MODO 2: Completo
       mode = 2;
       const mNum = parseInt(matches) || 1; 
-      const sgNum = parseInt(seasonGoals) || 0;
 
       const gpm = gNum / mNum;
       const apm = astNum / mNum;
-      const form = sgNum + (astNum * 0.3);
 
       const golScore = normalize(gpm, 0, 1.0);
       const assScore = normalize(apm, 0, 0.5);
-      const frmScore = normalize(form, 0, 30);
 
-      const rawPerf = (golScore * 0.25) + (assScore * 0.20) + (frmScore * 0.25) + (ageScore * 0.30);
+      // Distribuindo o peso da antiga métrica de temporada para Goals e Idade
+      const rawPerf = (golScore * 0.35) + (assScore * 0.25) + (ageScore * 0.40);
       const perfScore = Math.min(rawPerf + getTrophyBonus(tNum), 99);
 
       finalOVR = (socialScore * 0.50) + (perfScore * 0.50);
@@ -285,14 +282,10 @@ export default function Calculator() {
                   <input type="number" placeholder="Ex: 47" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={goals} onChange={e => setGoals(e.target.value)} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Gols Temporada</label>
-                  <input type="number" placeholder="Ex: 12" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={seasonGoals} onChange={e => setSeasonGoals(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Assistências</label>
+                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Passes / Assists</label>
                   <input type="number" placeholder="Ex: 23" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={assists} onChange={e => setAssists(e.target.value)} />
                 </div>
-                <div className="col-span-2">
+                <div>
                   <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Títulos / Troféus</label>
                   <input type="number" placeholder="Ex: 3" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={trophies} onChange={e => setTrophies(e.target.value)} />
                 </div>
@@ -339,21 +332,12 @@ export default function Calculator() {
                     <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Posição</span>
                     <span className="block text-[15px] font-bold text-[var(--color-navy)]">{result.position}</span>
                   </div>
-
-                  {/* Verificado */}
-                  <div className="flex items-center gap-1.5 border border-amber-200 bg-amber-50 rounded-full px-3 py-1.5 shadow-sm mt-1">
-                    <CheckCircle className="w-3.5 h-3.5 text-amber-600" />
-                    <span className="text-[10px] font-bold text-[var(--color-navy)]">Verificado</span>
-                  </div>
                 </div>
 
                 {/* Row 2: Profile */}
                 <div className="flex items-center gap-4 mt-8">
                   <div className="relative w-16 h-16 rounded-[14px] border-2 border-slate-200 p-2 flex items-center justify-center bg-white shadow-sm">
                     <span className="text-3xl drop-shadow-sm">⚽</span>
-                    <div className="absolute -bottom-2 -right-2 bg-[var(--color-gold)] text-white text-[9px] font-black px-1.5 py-0.5 rounded-md shadow-md">
-                      PRO
-                    </div>
                   </div>
                   <div>
                     <h3 className="text-[22px] font-black text-[var(--color-navy)] leading-tight">{result.name}</h3>
@@ -402,7 +386,7 @@ export default function Calculator() {
                         </div>
                         <div className="flex flex-col items-center">
                           <span className="text-lg font-black text-[var(--color-navy)]">{result.raw.assists}</span>
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Assists</span>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Passes</span>
                         </div>
                         <div className="flex flex-col items-center">
                           <span className="text-lg font-black text-[var(--color-navy)]">{result.raw.trophies}</span>
@@ -413,13 +397,25 @@ export default function Calculator() {
                   )}
                 </div>
 
-                {/* Row 4: CTA */}
-                <div className="mt-7 bg-[var(--color-navy)] rounded-xl p-4 flex justify-between items-center shadow-lg border border-slate-800">
-                  <div className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-[var(--color-gold)]" />
-                    <span className="text-[13px] font-medium text-white/90">Valor do Passe</span>
+                {/* Row 4: CTAs */}
+                <div className="flex flex-col gap-2 mt-7">
+                  {/* Patrocínio */}
+                  <div className="bg-[var(--color-navy)] rounded-xl p-4 flex justify-between items-center shadow-lg border border-slate-800">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-[var(--color-gold)]" />
+                      <span className="text-[13px] font-medium text-white/90">Patrocínio:</span>
+                    </div>
+                    <span className="text-lg font-black text-[var(--color-gold)]">{fmt(result.mediaValue)}<span className="text-[10px] font-medium text-white/60 ml-0.5">/mês</span></span>
                   </div>
-                  <span className="text-lg font-black text-[var(--color-gold)]">{fmt(result.mediaValue)}<span className="text-[10px] font-medium text-white/60 ml-0.5">/mês</span></span>
+
+                  {/* Valor do Passe */}
+                  <div className="bg-[var(--color-navy)] rounded-xl p-4 flex justify-between items-center shadow-lg border border-slate-800 opacity-95">
+                    <div className="flex items-center gap-2">
+                      <Trophy className="w-4 h-4 text-slate-300" />
+                      <span className="text-[13px] font-medium text-slate-300">Valor do Passe:</span>
+                    </div>
+                    <span className="text-lg font-black text-white">{fmt(result.passValue)}</span>
+                  </div>
                 </div>
 
               </div>
@@ -445,7 +441,7 @@ export default function Calculator() {
               </div>
               
               <p className="text-xs text-slate-300 font-medium leading-relaxed mb-4 relative z-10">
-                Cálculo <strong className="text-white">100% preciso</strong> auditado pela API do Instagram. <strong className="text-white">Inteligência Artificial</strong> para criar roteiros de vídeo e posts prontos para seus patrocinadores.
+                Cálculo <strong className="text-white">100% exato</strong> com a recuperação real dos seus dados do <strong className="text-white">Instagram, TikTok e YouTube</strong>. Inteligência Artificial para criar roteiros de vídeo e posts para marcas.
               </p>
               
               <button className="w-full py-2.5 rounded-lg border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-[11px] uppercase tracking-wider font-bold hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-colors relative z-10">
