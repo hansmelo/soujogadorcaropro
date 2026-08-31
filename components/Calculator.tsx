@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, Download, X, Share2 } from 'lucide-react';
+import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, X, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 export default function Calculator() {
@@ -296,7 +296,20 @@ export default function Calculator() {
             </div>
             <div className="flex-1">
               <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">@ Instagram</label>
-              <input type="text" placeholder="Ex: @lucas_camisa10" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all" value={username} onChange={e => setUsername(e.target.value)} required />
+              <input 
+                type="text" 
+                placeholder="Ex: @lucas_camisa10" 
+                className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all" 
+                value={username} 
+                onChange={e => {
+                  let val = e.target.value;
+                  if (val.length > 0 && !val.startsWith('@')) {
+                    val = '@' + val;
+                  }
+                  setUsername(val);
+                }} 
+                required 
+              />
             </div>
           </div>
 
