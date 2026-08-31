@@ -416,9 +416,19 @@ export default function Calculator() {
 
                 {/* Row 2: Profile */}
                 <div className="flex items-center gap-4 mt-8">
-                  <div className="relative w-16 h-16 rounded-[14px] bg-[var(--color-navy)] border border-[var(--color-gold)]/30 p-2 flex flex-col items-center justify-center shadow-lg">
-                    <span className="text-[9px] text-[var(--color-gold)]/90 font-bold uppercase tracking-widest leading-none mb-0.5">Nº</span>
-                    <span className="text-3xl font-black text-white leading-none drop-shadow-md">{result.jerseyNumber}</span>
+                  <div className="relative w-16 h-16 flex items-center justify-center">
+                    {/* Custom Football Jersey SVG */}
+                    <svg 
+                      viewBox="0 0 24 24" 
+                      className="w-16 h-16 text-[var(--color-navy)] drop-shadow-md"
+                      fill="currentColor" 
+                    >
+                      <path d="M7.5 3 C 7.5 3, 12 6, 16.5 3 L 21 7.5 V 11.5 H 18 V 21 H 6 V 11.5 H 3 V 7.5 L 7.5 3 Z" />
+                    </svg>
+                    {/* Jersey Number Overlay */}
+                    <span className="absolute inset-0 flex items-center justify-center text-xl font-black text-white mt-2 drop-shadow-sm tracking-tighter">
+                      {result.jerseyNumber}
+                    </span>
                   </div>
                   <div>
                     <h3 className="text-[22px] font-black text-[var(--color-navy)] leading-tight">{result.name}</h3>
