@@ -191,10 +191,29 @@ export default function Calculator() {
     if (!vipContact.trim()) return;
     setVipStatus('loading');
     
-    // Simula a requisição para salvar o lead
-    setTimeout(() => {
-      setVipStatus('success');
-    }, 1200);
+    try {
+      const response = await fetch('/api/vip', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contact: vipContact,
+          name: result?.name,
+          username: result?.username,
+          aura: result?.ovr
+        })
+      });
+
+      if (response.ok) {
+        setVipStatus('success');
+      } else {
+        setVipStatus('idle');
+        alert('Ocorreu um erro ao salvar seu contato. Tente novamente.');
+      }
+    } catch (error) {
+      console.error('Erro na requisição:', error);
+      setVipStatus('idle');
+      alert('Erro de conexão. Verifique sua internet.');
+    }
   };
 
   const getShareText = () => {
