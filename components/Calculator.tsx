@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, Download, X } from 'lucide-react';
+import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, Download, X, Share2 } from 'lucide-react';
 import { QRCodeSVG } from 'qrcode.react';
 
 export default function Calculator() {
@@ -248,7 +248,7 @@ export default function Calculator() {
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: 'Meu Scout',
-              text: `⚽ Saiu meu scout no SouJogadorCaro!\n🔥 AURA: ${result.ovr} | 💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule o seu também:`,
+              text: `⚽ Saiu meu scout no SouJogadorCaro!\n🔥 AURA: ${result.ovr} | 💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule o seu também: https://soujogadorcaro.pro`,
               files: [file]
             });
             setIsDownloading(false);
@@ -555,8 +555,8 @@ export default function Calculator() {
                 <span className="flex items-center gap-2">Gerando Imagem...</span>
               ) : (
                 <>
-                  <Download className="w-5 h-5 text-[var(--color-gold)]" />
-                  Baixar Card (JPG)
+                  <Share2 className="w-5 h-5 text-[var(--color-gold)]" />
+                  Compartilhar Card
                 </>
               )}
             </button>
