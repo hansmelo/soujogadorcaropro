@@ -223,13 +223,12 @@ export default function Calculator() {
     if (!cardRef.current || !result) return;
     setIsDownloading(true);
     try {
-      const html2canvas = (await import('html2canvas')).default;
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 3, // High quality
-        useCORS: true,
+      const { toJpeg } = await import('html-to-image');
+      const dataUrl = await toJpeg(cardRef.current, {
+        quality: 0.95,
         backgroundColor: '#ffffff',
+        pixelRatio: 3, // Alta resolução
       });
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
       const link = document.createElement('a');
       link.download = `scout-${result.username.replace('@', '')}.jpg`;
       link.href = dataUrl;
