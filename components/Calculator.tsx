@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, MessageCircle, X } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, Download, X } from 'lucide-react';
 
 export default function Calculator() {
   // Required personal fields
@@ -27,6 +27,10 @@ export default function Calculator() {
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [vipContact, setVipContact] = useState('');
   const [vipStatus, setVipStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+
+  // Image Download State & Ref
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   interface ResultType {
     ovr: number;
@@ -185,7 +189,6 @@ export default function Calculator() {
   const fmt = (val: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
-  // Handlers for new features
   const handleVipSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vipContact.trim()) return;
@@ -216,14 +219,27 @@ export default function Calculator() {
     }
   };
 
-  const getShareText = () => {
-    if (!result) return '';
-    return `⚽ Saiu meu scout no SouJogadorCaro!\n\n🔥 AURA: ${result.ovr}\n🏆 Posição: ${result.position}\n💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule a sua AURA e veja seu valor no mercado de patrocínios:\n👉 https://soujogadorcaro.pro`;
-  };
-
-  const handleWhatsAppShare = () => {
-    const url = `https://wa.me/?text=${encodeURIComponent(getShareText())}`;
-    window.open(url, '_blank');
+  const handleDownloadCard = async () => {
+    if (!cardRef.current || !result) return;
+    setIsDownloading(true);
+    try {
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(cardRef.current, {
+        scale: 3, // High quality
+        useCORS: true,
+        backgroundColor: '#ffffff',
+      });
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.95);
+      const link = document.createElement('a');
+      link.download = `scout-${result.username.replace('@', '')}.jpg`;
+      link.href = dataUrl;
+      link.click();
+    } catch (err) {
+      console.error('Erro ao gerar imagem:', err);
+      alert('Não foi possível gerar a imagem no momento.');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -361,7 +377,7 @@ export default function Calculator() {
           <div className="w-full max-w-sm mt-4 animate-slide-up flex flex-col items-center">
             
             {/* The Main Card */}
-            <div className="relative w-full max-w-[360px] bg-white rounded-[20px] shadow-2xl overflow-hidden border border-slate-100 pb-1">
+            <div ref={cardRef} className="relative w-full max-w-[360px] bg-white rounded-[20px] shadow-2xl overflow-hidden border border-slate-100 pb-1">
               <div className="h-2 w-full bg-gradient-to-r from-[var(--color-navy)] via-[var(--color-gold)] to-[var(--color-navy)]"></div>
               
               <div className="p-6">
@@ -466,13 +482,20 @@ export default function Calculator() {
               </div>
             </div>
 
-            {/* Virality: Share Button */}
+            {/* Virality: Download Card Button */}
             <button 
-              onClick={handleWhatsAppShare}
-              className="mt-5 w-full max-w-[360px] bg-[#25D366] hover:bg-[#20b858] text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#25D366]/25"
+              onClick={handleDownloadCard}
+              disabled={isDownloading}
+              className="mt-5 w-full max-w-[360px] bg-[var(--color-navy)] hover:bg-slate-800 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-slate-900/25 disabled:opacity-70"
             >
-              <MessageCircle className="w-5 h-5" />
-              Compartilhar AURA no WhatsApp
+              {isDownloading ? (
+                <span className="flex items-center gap-2">Gerando Imagem...</span>
+              ) : (
+                <>
+                  <Download className="w-5 h-5 text-[var(--color-gold)]" />
+                  Baixar Card (JPG)
+                </>
+              )}
             </button>
 
             {/* Mode 1 Upsell */}
