@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield } from 'lucide-react';
+import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, MessageCircle, X } from 'lucide-react';
 
 export default function Calculator() {
   // Required personal fields
@@ -22,6 +22,11 @@ export default function Calculator() {
   const [goals, setGoals] = useState('');
   const [assists, setAssists] = useState('');
   const [trophies, setTrophies] = useState('');
+
+  // VIP Modal state
+  const [isVipModalOpen, setIsVipModalOpen] = useState(false);
+  const [vipContact, setVipContact] = useState('');
+  const [vipStatus, setVipStatus] = useState<'idle' | 'loading' | 'success'>('idle');
 
   interface ResultType {
     ovr: number;
@@ -180,6 +185,28 @@ export default function Calculator() {
   const fmt = (val: number) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 }).format(val);
 
+  // Handlers for new features
+  const handleVipSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!vipContact.trim()) return;
+    setVipStatus('loading');
+    
+    // Simula a requisição para salvar o lead
+    setTimeout(() => {
+      setVipStatus('success');
+    }, 1200);
+  };
+
+  const getShareText = () => {
+    if (!result) return '';
+    return `⚽ Saiu meu scout no SouJogadorCaro!\n\n🔥 AURA: ${result.ovr}\n🏆 Posição: ${result.position}\n💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule a sua AURA e veja seu valor no mercado de patrocínios:\n👉 https://soujogadorcaro.pro`;
+  };
+
+  const handleWhatsAppShare = () => {
+    const url = `https://wa.me/?text=${encodeURIComponent(getShareText())}`;
+    window.open(url, '_blank');
+  };
+
   return (
     <section id="calculadora" className="w-full py-24 px-4 relative bg-slate-50">
       <div className="relative max-w-2xl mx-auto flex flex-col items-center">
@@ -310,17 +337,18 @@ export default function Calculator() {
           </div>
         )}
 
-        {/* RESULTS CARD (DASHBOARD STYLE) */}
+        {/* RESULTS AREA */}
         {result && (
           <div className="w-full max-w-sm mt-4 animate-slide-up flex flex-col items-center">
             
+            {/* The Main Card */}
             <div className="relative w-full max-w-[360px] bg-white rounded-[20px] shadow-2xl overflow-hidden border border-slate-100 pb-1">
-              {/* Top Gradient Bar */}
               <div className="h-2 w-full bg-gradient-to-r from-[var(--color-navy)] via-[var(--color-gold)] to-[var(--color-navy)]"></div>
               
               <div className="p-6">
-                {/* AURA Badge */}
+                {/* Row 1: Header */}
                 <div className="flex justify-between items-start">
+                  {/* AURA Badge */}
                   <div className="bg-[#fcefc7] border border-[#f5d996] rounded-xl px-4 py-2 flex flex-col items-center justify-center min-w-[4.5rem] shadow-sm">
                     <span className="text-3xl font-black text-[var(--color-navy)] leading-none drop-shadow-sm">{result.ovr}</span>
                     <span className="text-[10px] font-black text-amber-600 mt-1 tracking-wider">AURA</span>
@@ -416,9 +444,17 @@ export default function Calculator() {
                     <span className="text-lg font-black text-white">{fmt(result.passValue)}</span>
                   </div>
                 </div>
-
               </div>
             </div>
+
+            {/* Virality: Share Button */}
+            <button 
+              onClick={handleWhatsAppShare}
+              className="mt-5 w-full max-w-[360px] bg-[#25D366] hover:bg-[#20b858] text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-[#25D366]/25"
+            >
+              <MessageCircle className="w-5 h-5" />
+              Compartilhar AURA no WhatsApp
+            </button>
 
             {/* Mode 1 Upsell */}
             {result.mode === 1 && (
@@ -440,16 +476,77 @@ export default function Calculator() {
               </div>
               
               <p className="text-xs text-slate-300 font-medium leading-relaxed mb-4 relative z-10">
-                O maior facilitador na busca de patrocínios e valorização da sua imagem. Tenha sua página exclusiva <strong className="text-white">soujogadorcaro.pro/seu-nome</strong> com a recuperação real dos seus dados nas redes sociais.
+                O maior facilitador na busca de patrocínios e valorização da sua imagem. Tenha sua página exclusiva <strong className="text-white">soujogadorcaro.pro/{result.username.replace('@', '')}</strong> com a recuperação real dos seus dados nas redes sociais.
               </p>
               
-              <button className="w-full py-2.5 rounded-lg border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-[11px] uppercase tracking-wider font-bold hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-colors relative z-10">
+              <button 
+                onClick={() => setIsVipModalOpen(true)}
+                className="w-full py-2.5 rounded-lg border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-[11px] uppercase tracking-wider font-bold hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-colors relative z-10"
+              >
                 Entrar na Lista VIP
               </button>
             </div>
 
           </div>
         )}
+
+        {/* Modal da Lista VIP */}
+        {isVipModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+            <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl animate-slide-up">
+              <button 
+                onClick={() => { setIsVipModalOpen(false); setVipStatus('idle'); setVipContact(''); }}
+                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              
+              {vipStatus === 'success' ? (
+                <div className="text-center py-8">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
+                    <CheckCircle className="w-8 h-8 text-green-500" />
+                  </div>
+                  <h3 className="text-2xl font-black text-[var(--color-navy)] mb-2">Você está na Lista!</h3>
+                  <p className="text-slate-600">
+                    Sua vaga VIP para garantir o perfil <strong className="text-slate-800">/{result?.username.replace('@', '')}</strong> foi reservada. Avisaremos você em breve!
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center gap-2 mb-4">
+                    <Sparkles className="w-5 h-5 text-[var(--color-gold)]" />
+                    <h3 className="text-xl font-black text-[var(--color-navy)]">Destrave o Plano PRO</h3>
+                  </div>
+                  <p className="text-sm text-slate-600 mb-6">
+                    Seja um dos primeiros a ter sua página exclusiva <strong className="text-[var(--color-navy)]">soujogadorcaro.pro/{result?.username.replace('@', '')}</strong> e comece a fechar patrocínios na sua cidade.
+                  </p>
+                  
+                  <form onSubmit={handleVipSubmit} className="flex flex-col gap-4">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">E-mail ou WhatsApp</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ex: 11999999999 ou email@exemplo.com"
+                        className="w-full text-sm rounded-xl border border-slate-200 px-4 py-3 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
+                        value={vipContact}
+                        onChange={e => setVipContact(e.target.value)}
+                        required
+                      />
+                    </div>
+                    <button 
+                      type="submit" 
+                      disabled={vipStatus === 'loading'}
+                      className="w-full py-3.5 rounded-xl font-bold text-[var(--color-navy)] bg-[var(--color-gold)] hover:bg-[var(--color-gold-hover)] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                    >
+                      {vipStatus === 'loading' ? 'Registrando...' : 'Garantir Minha Vaga VIP'}
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          </div>
+        )}
+
       </div>
     </section>
   );
