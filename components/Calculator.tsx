@@ -237,6 +237,29 @@ export default function Calculator() {
         backgroundColor: '#ffffff',
         pixelRatio: 3, // Alta resolução
       });
+
+      // Compartilhamento Nativo no Celular (Abre aquela gavetinha do WhatsApp/Insta)
+      if (navigator.share) {
+        try {
+          const response = await fetch(dataUrl);
+          const blob = await response.blob();
+          const file = new File([blob], `scout-${result.username.replace('@', '')}.jpg`, { type: 'image/jpeg' });
+          
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Meu Scout',
+              text: `⚽ Saiu meu scout no SouJogadorCaro!\n🔥 AURA: ${result.ovr} | 💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule o seu também:`,
+              files: [file]
+            });
+            setIsDownloading(false);
+            return; // Sucesso no compartilhamento nativo!
+          }
+        } catch (shareErr) {
+          console.log('Compartilhamento cancelado ou falhou, caindo para download.', shareErr);
+        }
+      }
+
+      // Fallback: Se for PC ou o compartilhamento falhar, faz o download normal da imagem
       const link = document.createElement('a');
       link.download = `scout-${result.username.replace('@', '')}.jpg`;
       link.href = dataUrl;
