@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, Download, X } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 
 export default function Calculator() {
   // Required personal fields
@@ -476,6 +477,17 @@ export default function Calculator() {
                       <span className="text-[13px] font-medium text-slate-300">Valor do Passe:</span>
                     </div>
                     <span className="text-lg font-black text-white">{fmt(result.passValue)}</span>
+                  </div>
+                </div>
+
+                {/* Brand Footer & QR Code */}
+                <div className="mt-5 pt-4 border-t border-slate-100 flex justify-between items-center">
+                  <div>
+                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Calcule sua AURA em:</p>
+                    <p className="text-xs font-black text-[var(--color-navy)] tracking-tight">soujogadorcaro.pro</p>
+                  </div>
+                  <div className="bg-white p-1 rounded-lg shadow-sm border border-slate-200 flex items-center justify-center">
+                    <QRCodeSVG value="https://soujogadorcaro.pro" size={32} level="M" />
                   </div>
                 </div>
               </div>
