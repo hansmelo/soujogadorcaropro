@@ -32,7 +32,7 @@ export default function Hero() {
       {/* CTA Buttons */}
       <div className="relative flex flex-col sm:flex-row gap-3 items-center justify-center w-full max-w-md sm:max-w-none mb-16">
         <a
-          href="#cta"
+          href="#calculadora"
           className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 font-bold text-white bg-[var(--color-gold)] rounded-xl hover:bg-[var(--color-gold-hover)] transition-all group shadow-lg shadow-amber-500/20 hover:shadow-xl hover:shadow-amber-500/30"
         >
           Criar Meu Passe — Grátis
