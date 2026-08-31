@@ -274,15 +274,15 @@ export default function Calculator() {
             {showFieldData && (
               <div className="p-4 border-t border-slate-100 grid grid-cols-2 gap-3 bg-slate-50/50">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Jogos Totais</label>
+                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Partidas</label>
                   <input type="number" placeholder="Ex: 82" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={matches} onChange={e => setMatches(e.target.value)} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Gols Totais</label>
+                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Gols</label>
                   <input type="number" placeholder="Ex: 47" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={goals} onChange={e => setGoals(e.target.value)} />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Passes / Assists</label>
+                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Assistências</label>
                   <input type="number" placeholder="Ex: 23" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={assists} onChange={e => setAssists(e.target.value)} />
                 </div>
                 <div>
@@ -441,7 +441,7 @@ export default function Calculator() {
               </div>
               
               <p className="text-xs text-slate-300 font-medium leading-relaxed mb-4 relative z-10">
-                Cálculo <strong className="text-white">100% exato</strong> com a recuperação real dos seus dados do <strong className="text-white">Instagram, TikTok e YouTube</strong>. Inteligência Artificial para criar roteiros de vídeo e posts para marcas.
+                O maior facilitador na busca de patrocínios e valorização da sua imagem. Tenha sua página exclusiva <strong className="text-white">soujogadorcaro.pro/seu-nome</strong> com a recuperação real dos seus dados nas redes sociais.
               </p>
               
               <button className="w-full py-2.5 rounded-lg border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-[11px] uppercase tracking-wider font-bold hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-colors relative z-10">
