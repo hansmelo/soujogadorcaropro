@@ -188,7 +188,7 @@ export default function Calculator() {
         </p>
 
         <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-center text-[var(--color-navy)]">
-          Qual o seu <span className="text-[var(--color-gold)]">OVR e Valor?</span>
+          Qual a sua <span className="text-[var(--color-gold)]">AURA e Valor?</span>
         </h2>
 
         <p className="text-slate-600 text-center max-w-lg mb-10">
@@ -319,12 +319,11 @@ export default function Calculator() {
               <div className="h-2 w-full bg-gradient-to-r from-[var(--color-navy)] via-[var(--color-gold)] to-[var(--color-navy)]"></div>
               
               <div className="p-6">
-                {/* Row 1: Header */}
+                {/* AURA Badge */}
                 <div className="flex justify-between items-start">
-                  {/* OVR Badge */}
                   <div className="bg-[#fcefc7] border border-[#f5d996] rounded-xl px-4 py-2 flex flex-col items-center justify-center min-w-[4.5rem] shadow-sm">
                     <span className="text-3xl font-black text-[var(--color-navy)] leading-none drop-shadow-sm">{result.ovr}</span>
-                    <span className="text-[10px] font-black text-amber-600 mt-1 tracking-wider">OVR</span>
+                    <span className="text-[10px] font-black text-amber-600 mt-1 tracking-wider">AURA</span>
                   </div>
                   
                   {/* Position */}
@@ -425,7 +424,7 @@ export default function Calculator() {
             {result.mode === 1 && (
               <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-900 text-xs px-4 py-3 rounded-xl text-center shadow-sm max-w-[360px] w-full">
                 <p className="font-bold mb-1 flex items-center justify-center gap-1">
-                  <Trophy className="w-3.5 h-3.5 text-[var(--color-gold)]" /> Destrave seu OVR Completo!
+                  <Trophy className="w-3.5 h-3.5 text-[var(--color-gold)]" /> Destrave sua AURA Completa!
                 </p>
                 <p className="text-amber-800/80">Adicione seus dados de campo no formulário acima para aumentar seu Passe e liberar todas as estatísticas do card.</p>
               </div>
