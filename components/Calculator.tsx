@@ -14,6 +14,7 @@ export default function Calculator() {
   // Required stats fields
   const [followers, setFollowers] = useState('');
   const [age, setAge] = useState('');
+  const [jerseyNumber, setJerseyNumber] = useState('');
   
   // Optional field data toggle
   const [showFieldData, setShowFieldData] = useState(false);
@@ -39,6 +40,7 @@ export default function Calculator() {
     username: string;
     position: string;
     category: string;
+    jerseyNumber: string;
     followersFormatted: string;
     reachFormatted: string;
     raw: {
@@ -90,8 +92,8 @@ export default function Calculator() {
     const fNum = parseInt(followers.replace(/\D/g, ''), 10);
     const aNum = parseInt(age.replace(/\D/g, ''), 10);
 
-    if (isNaN(fNum) || fNum < 100) {
-      setError('Digite um número válido de seguidores (mínimo 100).');
+    if (isNaN(fNum) || fNum < 0) {
+      setError('Digite um número válido de seguidores (pode ser 0).');
       return;
     }
     if (isNaN(aNum) || aNum < 10 || aNum > 60) {
@@ -100,6 +102,10 @@ export default function Calculator() {
     }
     if (!name.trim() || !username.trim()) {
       setError('Preencha seu nome e usuário do Instagram.');
+      return;
+    }
+    if (!jerseyNumber.trim()) {
+      setError('Preencha o número da sua camisa.');
       return;
     }
 
@@ -172,6 +178,7 @@ export default function Calculator() {
       username: username.startsWith('@') ? username : `@${username}`,
       position: position,
       category: category,
+      jerseyNumber: jerseyNumber,
       followersFormatted: formatCompactNumber(fNum),
       reachFormatted: formatCompactNumber(reachMock),
       raw: {
@@ -296,7 +303,7 @@ export default function Calculator() {
           </div>
 
           <div className="flex gap-3">
-            <div className="flex-1">
+            <div className="flex-[2]">
               <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Qtd Seguidores</label>
               <input
                 type="number"
@@ -307,7 +314,7 @@ export default function Calculator() {
                 required
               />
             </div>
-            <div className="w-1/3">
+            <div className="flex-1">
               <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Idade</label>
               <input
                 type="number"
@@ -315,6 +322,17 @@ export default function Calculator() {
                 className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
                 value={age}
                 onChange={(e) => setAge(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex-1">
+              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Nº Camisa</label>
+              <input
+                type="number"
+                placeholder="Ex: 10"
+                className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
+                value={jerseyNumber}
+                onChange={(e) => setJerseyNumber(e.target.value)}
                 required
               />
             </div>
@@ -398,8 +416,9 @@ export default function Calculator() {
 
                 {/* Row 2: Profile */}
                 <div className="flex items-center gap-4 mt-8">
-                  <div className="relative w-16 h-16 rounded-[14px] border-2 border-slate-200 p-2 flex items-center justify-center bg-white shadow-sm">
-                    <span className="text-3xl drop-shadow-sm">⚽</span>
+                  <div className="relative w-16 h-16 rounded-[14px] bg-[var(--color-navy)] border border-[var(--color-gold)]/30 p-2 flex flex-col items-center justify-center shadow-lg">
+                    <span className="text-[9px] text-[var(--color-gold)]/90 font-bold uppercase tracking-widest leading-none mb-0.5">Nº</span>
+                    <span className="text-3xl font-black text-white leading-none drop-shadow-md">{result.jerseyNumber}</span>
                   </div>
                   <div>
                     <h3 className="text-[22px] font-black text-[var(--color-navy)] leading-tight">{result.name}</h3>
