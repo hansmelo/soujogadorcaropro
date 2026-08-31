@@ -248,7 +248,7 @@ export default function Calculator() {
           if (navigator.canShare && navigator.canShare({ files: [file] })) {
             await navigator.share({
               title: 'Meu Scout',
-              text: `⚽ Saiu meu scout no Sou Jogador Caro!\n🔥 AURA: ${result.ovr} | 💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule o seu também: https://soujogadorcaro.pro`,
+              text: `⚽ Saiu meu scout no Sou Jogador Caro!\n🔥 AURA: ${result.ovr}\n🤝 Patrocínio: ${fmt(result.mediaValue)}/mês\n💰 Meu Passe: ${fmt(result.passValue)}\n\nCalcule o seu também: https://soujogadorcaro.pro`,
               files: [file]
             });
             setIsDownloading(false);
