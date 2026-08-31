@@ -276,59 +276,62 @@ export default function Calculator() {
           <div className="w-full max-w-sm mt-4 animate-slide-up flex flex-col items-center">
             
             {/* The Physical Card */}
-            <div className={`relative w-64 rounded-t-2xl rounded-b-md p-1 bg-gradient-to-br ${result.tier.color} shadow-2xl`}>
-              <div className="w-full h-full bg-white/95 backdrop-blur-sm rounded-t-[14px] rounded-b-sm p-4 flex flex-col items-center">
+            <div className={`relative w-72 rounded-2xl p-1.5 bg-gradient-to-br ${result.tier.color} shadow-2xl`}>
+              <div className="w-full h-full bg-white/95 backdrop-blur-sm rounded-[14px] p-5 flex flex-col items-center">
                 
                 {/* Card Header (OVR & Tier) */}
                 <div className="flex flex-col items-center mb-4">
-                  <span className="text-4xl font-black text-[var(--color-navy)] leading-none">{result.ovr}</span>
-                  <div className="flex items-center gap-1 mt-1">
+                  <span className="text-5xl font-black text-[var(--color-navy)] leading-none drop-shadow-sm">{result.ovr}</span>
+                  <div className="flex items-center gap-1.5 mt-1.5 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
                     <span className="text-xs">{result.tier.emoji}</span>
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${result.tier.text}`}>{result.tier.name}</span>
+                    <span className={`text-[10px] font-black uppercase tracking-widest ${result.tier.text}`}>{result.tier.name}</span>
                   </div>
                 </div>
 
-                <div className="w-full h-px bg-slate-200 mb-3" />
+                {/* HIGHLIGHT: Patrocínio Sugerido */}
+                <div className="w-full bg-[var(--color-navy)] rounded-xl p-3.5 flex flex-col items-center justify-center shadow-lg mb-5 relative overflow-hidden group">
+                  <div className="absolute -right-4 -top-4 w-16 h-16 bg-[var(--color-gold)]/20 rounded-full blur-xl group-hover:bg-[var(--color-gold)]/30 transition-all"></div>
+                  <span className="text-[10px] text-white/70 uppercase font-bold tracking-widest mb-1 z-10">Patrocínio Mensal</span>
+                  <div className="flex items-baseline gap-1 z-10">
+                    <span className="text-2xl font-black text-[var(--color-gold)] drop-shadow-sm">{fmt(result.mediaValue)}</span>
+                    <span className="text-xs font-medium text-white/60">/mês</span>
+                  </div>
+                </div>
 
-                {/* 6 Stats Grid */}
-                <div className="w-full grid grid-cols-2 gap-x-6 gap-y-2 mb-4 px-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400">RCH</span>
+                {/* 6 Stats Grid (Clear names) */}
+                <div className="w-full grid grid-cols-2 gap-x-3 gap-y-2 mb-5">
+                  <div className="flex justify-between items-center bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Alcance</span>
                     <span className="text-sm font-black text-[var(--color-navy)]">{result.stats.rch}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400">GOL</span>
+                  <div className="flex justify-between items-center bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Gols</span>
                     <span className="text-sm font-black text-[var(--color-navy)]">{result.stats.gol}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400">ENG</span>
+                  <div className="flex justify-between items-center bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Engajam.</span>
                     <span className="text-sm font-black text-[var(--color-navy)]">{result.stats.eng}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400">ASS</span>
+                  <div className="flex justify-between items-center bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Assists</span>
                     <span className="text-sm font-black text-[var(--color-navy)]">{result.stats.ass}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400">FRM</span>
+                  <div className="flex justify-between items-center bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Fase Atual</span>
                     <span className="text-sm font-black text-[var(--color-navy)]">{result.stats.frm}</span>
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-bold text-slate-400">TIT</span>
+                  <div className="flex justify-between items-center bg-slate-50 border border-slate-100 px-2.5 py-1.5 rounded-lg">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase">Títulos</span>
                     <span className="text-sm font-black text-[var(--color-navy)]">{result.stats.tit}</span>
                   </div>
                 </div>
 
-                <div className="w-full h-px bg-slate-200 mb-3" />
-
-                {/* Valuation */}
-                <div className="w-full flex flex-col items-center">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valor do Passe</span>
-                  <span className="text-lg font-black text-[var(--color-gold)]">{fmt(result.passValue)}</span>
-                  
-                  <div className="mt-2 flex flex-col items-center bg-slate-50 px-4 py-1.5 rounded-full border border-slate-100">
-                    <span className="text-[9px] text-slate-500 uppercase font-bold">Patrocínio Sugerido</span>
-                    <span className="text-xs font-bold text-[var(--color-navy)]">{fmt(result.mediaValue)} / mês</span>
-                  </div>
+                {/* Valuation / Passe */}
+                <div className="w-full pt-3.5 border-t border-slate-200 flex justify-between items-center px-1">
+                  <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <Zap className="w-3 h-3 text-[var(--color-gold)]" /> Passe Digital
+                  </span>
+                  <span className="text-sm font-black text-slate-700">{fmt(result.passValue)}</span>
                 </div>
 
               </div>
