@@ -1,5 +1,5 @@
 import React from 'react';
-import { Quote } from 'lucide-react';
+import { Star } from 'lucide-react';
 
 const testimonials = [
   {
@@ -22,35 +22,46 @@ const testimonials = [
   },
 ];
 
+const initials = (name: string) => name.split(' ').map((n) => n[0]).join('').slice(0, 2);
+
 export default function Testimonials() {
   return (
-    <section className="w-full py-24 px-4 bg-slate-50">
-      <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-16">
-          <p className="text-sm font-semibold text-[var(--color-gold)] uppercase tracking-wider mb-3">
-            Depoimentos
-          </p>
-          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-[var(--color-navy)]">
-            Atletas que já estão jogando no nível PRO
+    <section className="w-full py-24 md:py-32 px-4 bg-night border-y border-white/5">
+      <div className="max-w-6xl mx-auto">
+        <div className="reveal text-center mb-16">
+          <p className="text-xs font-bold text-gold uppercase tracking-[0.25em] mb-4">Depoimentos</p>
+          <h2 className="font-display font-black uppercase text-5xl md:text-6xl leading-[0.9] tracking-tight text-white">
+            Atletas que já estão <br className="hidden sm:block" />
+            <span className="text-gold-gradient">jogando no nível PRO</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {testimonials.map((t, idx) => (
-            <div
-              key={idx}
-              className="flex flex-col p-6 rounded-2xl bg-white border border-slate-100 shadow-sm"
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {testimonials.map((t) => (
+            <figure
+              key={t.name}
+              className="reveal relative flex flex-col p-7 rounded-3xl bg-surface border border-white/5 hover:border-gold/25 hover:-translate-y-1 transition-all duration-300"
             >
-              <Quote className="w-5 h-5 text-[var(--color-gold)] mb-3" />
-              <p className="text-sm text-slate-600 leading-relaxed mb-6 flex-1">
-                &ldquo;{t.quote}&rdquo;
-              </p>
-              <div className="border-t border-slate-100 pt-4">
-                <p className="text-sm font-bold text-[var(--color-navy)]">{t.name}</p>
-                <p className="text-xs text-slate-400">{t.role}</p>
-                <p className="text-xs text-[var(--color-gold)] font-medium mt-0.5">{t.followers}</p>
+              <span className="absolute top-3 right-6 font-display font-black text-8xl leading-none text-white/5 select-none" aria-hidden="true">&rdquo;</span>
+              <div className="flex gap-0.5 mb-5">
+                {[...Array(5)].map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-gold text-gold" />
+                ))}
               </div>
-            </div>
+              <blockquote className="text-slate-300 leading-relaxed mb-8 flex-1">
+                &ldquo;{t.quote}&rdquo;
+              </blockquote>
+              <figcaption className="flex items-center gap-3 pt-5 border-t border-white/5">
+                <span className="w-11 h-11 rounded-full bg-gradient-to-br from-gold-light to-gold-deep text-gold-ink font-display font-black text-lg flex items-center justify-center">
+                  {initials(t.name)}
+                </span>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-white">{t.name}</p>
+                  <p className="text-xs text-slate-500">{t.role}</p>
+                  <p className="text-[11px] font-semibold text-gold mt-0.5">{t.followers}</p>
+                </div>
+              </figcaption>
+            </figure>
           ))}
         </div>
       </div>

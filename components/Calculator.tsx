@@ -1,8 +1,20 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
-import { Zap, AlertCircle, ChevronDown, ChevronUp, Trophy, Sparkles, Users, TrendingUp, Eye, Shield, CheckCircle, X, Share2 } from 'lucide-react';
-import { QRCodeSVG } from 'qrcode.react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Zap, AlertCircle, ChevronDown, Trophy, Sparkles, CheckCircle, X, Share2, Loader2, Lock } from 'lucide-react';
+import PlayerCard, { type PlayerCardData } from './PlayerCard';
+
+const inputClass =
+  'w-full text-sm text-white placeholder:text-slate-600 rounded-xl bg-white/[0.04] border border-white/10 px-3.5 py-3 outline-none transition-all hover:border-white/20 focus:border-gold focus:bg-white/[0.06] focus:ring-4 focus:ring-gold/15';
+
+function Field({ id, label, className = '', children }: { id: string; label: string; className?: string; children: React.ReactNode }) {
+  return (
+    <div className={className}>
+      <label htmlFor={id} className="block text-[11px] font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">{label}</label>
+      {children}
+    </div>
+  );
+}
 
 export default function Calculator() {
   // Required personal fields
@@ -29,9 +41,11 @@ export default function Calculator() {
   const [isVipModalOpen, setIsVipModalOpen] = useState(false);
   const [vipContact, setVipContact] = useState('');
   const [vipStatus, setVipStatus] = useState<'idle' | 'loading' | 'success'>('idle');
+  const [vipError, setVipError] = useState('');
 
   // Image Download State & Ref
   const cardRef = useRef<HTMLDivElement>(null);
+  const cardAreaRef = useRef<HTMLDivElement>(null);
   const [isDownloading, setIsDownloading] = useState(false);
 
   interface ResultType {
@@ -192,6 +206,18 @@ export default function Calculator() {
     });
     
     setIsCalculating(false);
+
+    // On stacked (mobile) layouts the card sits below the form — bring it into view
+    if (window.innerWidth < 1024) {
+      requestAnimationFrame(() => cardAreaRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
+  };
+
+  const closeVipModal = () => {
+    setIsVipModalOpen(false);
+    setVipStatus('idle');
+    setVipContact('');
+    setVipError('');
   };
 
   const fmt = (val: number) =>
@@ -200,6 +226,7 @@ export default function Calculator() {
   const handleVipSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!vipContact.trim()) return;
+    setVipError('');
     setVipStatus('loading');
     
     try {
@@ -218,12 +245,12 @@ export default function Calculator() {
         setVipStatus('success');
       } else {
         setVipStatus('idle');
-        alert('Ocorreu um erro ao salvar seu contato. Tente novamente.');
+        setVipError('Ocorreu um erro ao salvar seu contato. Tente novamente.');
       }
     } catch (error) {
       console.error('Erro na requisição:', error);
       setVipStatus('idle');
-      alert('Erro de conexão. Verifique sua internet.');
+      setVipError('Erro de conexão. Verifique sua internet.');
     }
   };
 
@@ -234,7 +261,7 @@ export default function Calculator() {
       const { toJpeg } = await import('html-to-image');
       const dataUrl = await toJpeg(cardRef.current, {
         quality: 0.95,
-        backgroundColor: '#ffffff',
+        backgroundColor: '#05080f',
         pixelRatio: 3, // Alta resolução
       });
 
@@ -272,400 +299,342 @@ export default function Calculator() {
     }
   };
 
+
+  // Close the VIP modal with Escape
+  useEffect(() => {
+    if (!isVipModalOpen) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') closeVipModal(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isVipModalOpen]);
+
+  // Live preview while the form is being filled; real numbers once calculated
+  const followersPreview = parseInt(followers.replace(/\D/g, ''), 10);
+  const cardData: PlayerCardData = result
+    ? {
+        ovr: result.ovr,
+        name: result.name,
+        username: result.username,
+        position: result.position,
+        category: result.category,
+        jerseyNumber: result.jerseyNumber,
+        followers: result.followersFormatted,
+        engagement: '8.4%',
+        reach: result.reachFormatted,
+        fieldStats: result.mode === 2 ? result.raw : undefined,
+        sponsorship: fmt(result.mediaValue),
+        passValue: fmt(result.passValue),
+      }
+    : {
+        ovr: '??',
+        name: name.trim() || 'Seu Nome',
+        username: username || '@seu_insta',
+        position,
+        category,
+        jerseyNumber,
+        followers: isNaN(followersPreview) ? '—' : formatCompactNumber(followersPreview),
+        engagement: '—',
+        reach: '—',
+        sponsorship: 'R$ ???',
+        passValue: 'R$ ???',
+      };
+
+  const handle = (result?.username ?? username).replace('@', '');
+
   return (
-    <section id="calculadora" className="w-full py-24 px-4 relative bg-slate-50">
-      <div className="relative max-w-2xl mx-auto flex flex-col items-center">
-        <p className="text-sm font-semibold text-[var(--color-gold)] uppercase tracking-wider mb-3">
-          Calculadora de Passe
-        </p>
-
-        <h2 className="text-3xl md:text-5xl font-black tracking-tight mb-4 text-center text-[var(--color-navy)]">
-          Qual a sua <span className="text-[var(--color-gold)]">AURA e Valor?</span>
-        </h2>
-
-        <p className="text-slate-600 text-center max-w-lg mb-10">
-          Descubra o seu potencial de patrocínio local e o valor do seu Passe Digital baseado em dados reais.
-        </p>
-
-        <form onSubmit={calculate} className="w-full max-w-md mb-6 flex flex-col gap-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-          
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Nome Completo</label>
-              <input type="text" placeholder="Ex: Lucas Souza" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all" value={name} onChange={e => setName(e.target.value)} required />
-            </div>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">@ Instagram</label>
-              <input 
-                type="text" 
-                placeholder="Ex: @lucas_camisa10" 
-                className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all" 
-                value={username} 
-                onChange={e => {
-                  let val = e.target.value;
-                  if (val.length > 0 && !val.startsWith('@')) {
-                    val = '@' + val;
-                  }
-                  setUsername(val);
-                }} 
-                required 
-              />
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Posição</label>
-              <select className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none bg-white transition-all" value={position} onChange={e => setPosition(e.target.value)}>
-                <option>Goleiro</option>
-                <option>Zagueiro</option>
-                <option>Lateral</option>
-                <option>Volante</option>
-                <option>Meio-Campo</option>
-                <option>Meia Atacante</option>
-                <option>Atacante</option>
-              </select>
-            </div>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Categoria</label>
-              <select className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none bg-white transition-all" value={category} onChange={e => setCategory(e.target.value)}>
-                <option>Amador / Várzea</option>
-                <option>Sub-17</option>
-                <option>Sub-20</option>
-                <option>Universitário</option>
-                <option>Semi-Profissional</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <div className="flex-[2]">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Qtd Seguidores</label>
-              <input
-                type="number"
-                placeholder="Ex: 45000"
-                className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
-                value={followers}
-                onChange={(e) => setFollowers(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Idade</label>
-              <input
-                type="number"
-                placeholder="Ex: 19"
-                className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-                required
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Nº Camisa</label>
-              <input
-                type="number"
-                placeholder="Ex: 10"
-                className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2.5 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
-                value={jerseyNumber}
-                onChange={(e) => setJerseyNumber(e.target.value)}
-                required
-              />
-            </div>
-          </div>
-
-          {/* Expandable Field Data Section */}
-          <div className="bg-white border border-slate-200 rounded-xl overflow-hidden transition-all duration-300 mt-2">
-            <button
-              type="button"
-              onClick={() => setShowFieldData(!showFieldData)}
-              className="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-[var(--color-navy)] hover:bg-slate-50 transition-colors"
-            >
-              <span className="flex items-center gap-2">
-                ⚽ Adicionar Dados de Campo <span className="text-[10px] font-normal text-slate-400">(Opcional)</span>
-              </span>
-              {showFieldData ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-            
-            {showFieldData && (
-              <div className="p-4 border-t border-slate-100 grid grid-cols-2 gap-3 bg-slate-50/50">
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Partidas</label>
-                  <input type="number" placeholder="Ex: 82" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={matches} onChange={e => setMatches(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Gols</label>
-                  <input type="number" placeholder="Ex: 47" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={goals} onChange={e => setGoals(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Assistências</label>
-                  <input type="number" placeholder="Ex: 23" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={assists} onChange={e => setAssists(e.target.value)} />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Títulos / Troféus</label>
-                  <input type="number" placeholder="Ex: 3" className="w-full text-sm rounded-lg border border-slate-200 px-3 py-2 outline-none focus:border-[var(--color-gold)]" value={trophies} onChange={e => setTrophies(e.target.value)} />
-                </div>
-              </div>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isCalculating}
-            className="mt-4 w-full py-3.5 font-bold rounded-xl bg-[var(--color-gold)] text-white hover:bg-[var(--color-gold-hover)] transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:cursor-wait shadow-md"
-          >
-            <Zap className="w-4 h-4" />
-            {isCalculating ? 'Calculando Scout...' : 'Gerar Meu Card'}
-          </button>
-        </form>
-
-        {error && (
-          <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 text-sm flex items-center gap-2 max-w-md w-full mb-6">
-            <AlertCircle className="w-4 h-4 text-[var(--color-gold)] shrink-0" />
-            {error}
-          </div>
-        )}
-
-        {/* RESULTS AREA */}
-        {result && (
-          <div className="w-full max-w-sm mt-4 animate-slide-up flex flex-col items-center">
-            
-            {/* The Main Card */}
-            <div ref={cardRef} className="relative w-full max-w-[360px] bg-white rounded-[20px] shadow-2xl overflow-hidden border border-slate-100 pb-1">
-              <div className="h-2 w-full bg-gradient-to-r from-[var(--color-navy)] via-[var(--color-gold)] to-[var(--color-navy)]"></div>
-              
-              <div className="p-6">
-                {/* Row 1: Header */}
-                <div className="flex justify-between items-start">
-                  {/* AURA Badge */}
-                  <div className="bg-[#fcefc7] border border-[#f5d996] rounded-xl px-4 py-2 flex flex-col items-center justify-center min-w-[4.5rem] shadow-sm">
-                    <span className="text-3xl font-black text-[var(--color-navy)] leading-none drop-shadow-sm">{result.ovr}</span>
-                    <span className="text-[10px] font-black text-amber-600 mt-1 tracking-wider">AURA</span>
-                  </div>
-                  
-                  {/* Position */}
-                  <div className="flex-1 px-4 pt-1 flex flex-col justify-center">
-                    <span className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Posição</span>
-                    <span className="block text-[15px] font-bold text-[var(--color-navy)]">{result.position}</span>
-                  </div>
-                </div>
-
-                {/* Row 2: Profile */}
-                <div className="flex items-center gap-4 mt-8">
-                  <div className="relative w-16 h-16 flex items-center justify-center">
-                    {/* Custom Football Jersey SVG */}
-                    <svg 
-                      viewBox="0 0 24 24" 
-                      className="w-16 h-16 text-[var(--color-navy)] drop-shadow-md"
-                      fill="currentColor" 
-                    >
-                      <path d="M7.5 3 C 7.5 3, 12 6, 16.5 3 L 21 7.5 V 11.5 H 18 V 21 H 6 V 11.5 H 3 V 7.5 L 7.5 3 Z" />
-                    </svg>
-                    {/* Jersey Number Overlay */}
-                    <span className="absolute inset-0 flex items-center justify-center text-xl font-black text-white mt-2 drop-shadow-sm tracking-tighter">
-                      {result.jerseyNumber}
-                    </span>
-                  </div>
-                  <div>
-                    <h3 className="text-[22px] font-black text-[var(--color-navy)] leading-tight">{result.name}</h3>
-                    <p className="text-xs font-medium text-slate-500 mt-1">
-                      {result.username} <span className="mx-1">·</span> {result.category}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Row 3: Stats */}
-                <div className="mt-7 bg-slate-50 border border-slate-100 rounded-2xl p-5 flex flex-col gap-4 shadow-inner">
-                  <div className="flex justify-between items-center px-1">
-                    <div className="flex flex-col items-center">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <Users className="w-4 h-4 text-[var(--color-gold)]" />
-                        <span className="text-xl font-black text-[var(--color-navy)]">{result.followersFormatted}</span>
-                      </div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Seguidores</span>
-                    </div>
-                    
-                    <div className="flex flex-col items-center">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <TrendingUp className="w-4 h-4 text-[var(--color-gold)]" />
-                        <span className="text-xl font-black text-[var(--color-navy)]">8.4%</span>
-                      </div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Engajamento</span>
-                    </div>
-                    
-                    <div className="flex flex-col items-center">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <Eye className="w-4 h-4 text-[var(--color-gold)]" />
-                        <span className="text-xl font-black text-[var(--color-navy)]">{result.reachFormatted}</span>
-                      </div>
-                      <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Alcance</span>
-                    </div>
-                  </div>
-                  
-                  {/* Field Stats (Mode 2) */}
-                  {result.mode === 2 && (
-                    <>
-                      <div className="w-full h-px bg-slate-200 my-1"></div>
-                      <div className="flex justify-between items-center px-4">
-                        <div className="flex flex-col items-center">
-                          <span className="text-lg font-black text-[var(--color-navy)]">{result.raw.goals}</span>
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Gols</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <span className="text-lg font-black text-[var(--color-navy)]">{result.raw.assists}</span>
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Passes</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                          <span className="text-lg font-black text-[var(--color-navy)]">{result.raw.trophies}</span>
-                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Títulos</span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Row 4: CTAs */}
-                <div className="flex flex-col gap-2 mt-7">
-                  {/* Patrocínio */}
-                  <div className="bg-[var(--color-navy)] rounded-xl p-4 flex justify-between items-center shadow-lg border border-slate-800">
-                    <div className="flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-[var(--color-gold)]" />
-                      <span className="text-[13px] font-medium text-white/90">Patrocínio:</span>
-                    </div>
-                    <span className="text-lg font-black text-[var(--color-gold)]">{fmt(result.mediaValue)}<span className="text-[10px] font-medium text-white/60 ml-0.5">/mês</span></span>
-                  </div>
-
-                  {/* Valor do Passe */}
-                  <div className="bg-[var(--color-navy)] rounded-xl p-4 flex justify-between items-center shadow-lg border border-slate-800 opacity-95">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="w-4 h-4 text-slate-300" />
-                      <span className="text-[13px] font-medium text-slate-300">Valor do Passe:</span>
-                    </div>
-                    <span className="text-lg font-black text-white">{fmt(result.passValue)}</span>
-                  </div>
-                </div>
-
-                {/* Brand Footer & QR Code */}
-                <div className="mt-5 pt-4 border-t border-slate-100 flex justify-between items-center">
-                  <div>
-                    <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5">Calcule sua AURA em:</p>
-                    <p className="text-xs font-black text-[var(--color-navy)] tracking-tight">soujogadorcaro.pro</p>
-                  </div>
-                  <div className="bg-white p-1 rounded-lg shadow-sm border border-slate-200 flex items-center justify-center">
-                    <QRCodeSVG value="https://soujogadorcaro.pro" size={32} level="M" />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Virality: Download Card Button */}
-            <button 
-              onClick={handleDownloadCard}
-              disabled={isDownloading}
-              className="mt-5 w-full max-w-[360px] bg-[var(--color-navy)] hover:bg-slate-800 text-white py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg shadow-slate-900/25 disabled:opacity-70"
-            >
-              {isDownloading ? (
-                <span className="flex items-center gap-2">Gerando Imagem...</span>
-              ) : (
-                <>
-                  <Share2 className="w-5 h-5 text-[var(--color-gold)]" />
-                  Compartilhar Card
-                </>
-              )}
-            </button>
-
-            {/* Mode 1 Upsell */}
-            {result.mode === 1 && (
-              <div className="mt-4 bg-amber-50 border border-amber-200 text-amber-900 text-xs px-4 py-3 rounded-xl text-center shadow-sm max-w-[360px] w-full">
-                <p className="font-bold mb-1 flex items-center justify-center gap-1">
-                  <Trophy className="w-3.5 h-3.5 text-[var(--color-gold)]" /> Destrave sua AURA Completa!
-                </p>
-                <p className="text-amber-800/80">Adicione seus dados de campo no formulário acima para aumentar seu Passe e liberar todas as estatísticas do card.</p>
-              </div>
-            )}
-
-            {/* Premium AI Upsell */}
-            <div className="mt-5 w-full max-w-[360px] bg-gradient-to-br from-[var(--color-navy)] to-[#0c1829] rounded-xl p-5 shadow-lg border border-[var(--color-gold)]/20 text-left relative overflow-hidden group">
-              <div className="absolute -right-6 -top-6 w-32 h-32 bg-[var(--color-gold)]/10 rounded-full blur-2xl group-hover:bg-[var(--color-gold)]/20 transition-all"></div>
-              
-              <div className="flex items-center gap-2 mb-2 relative z-10">
-                <Sparkles className="w-4 h-4 text-[var(--color-gold)]" />
-                <span className="text-[10px] font-black text-[var(--color-gold)] uppercase tracking-widest">Em Breve: Plano PRO</span>
-              </div>
-              
-              <p className="text-xs text-slate-300 font-medium leading-relaxed mb-4 relative z-10">
-                O maior facilitador na busca de patrocínios e valorização da sua imagem. Tenha sua página exclusiva <strong className="text-white">soujogadorcaro.pro/{result.username.replace('@', '')}</strong> com a recuperação real dos seus dados nas redes sociais.
-              </p>
-              
-              <button 
-                onClick={() => setIsVipModalOpen(true)}
-                className="w-full py-2.5 rounded-lg border border-[var(--color-gold)]/40 text-[var(--color-gold)] text-[11px] uppercase tracking-wider font-bold hover:bg-[var(--color-gold)] hover:text-[var(--color-navy)] transition-colors relative z-10"
-              >
-                Entrar na Lista VIP
-              </button>
-            </div>
-
-          </div>
-        )}
-
-        {/* Modal da Lista VIP */}
-        {isVipModalOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-            <div className="bg-white rounded-2xl w-full max-w-md p-6 relative shadow-2xl animate-slide-up">
-              <button 
-                onClick={() => { setIsVipModalOpen(false); setVipStatus('idle'); setVipContact(''); }}
-                className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-              
-              {vipStatus === 'success' ? (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-5">
-                    <CheckCircle className="w-8 h-8 text-green-500" />
-                  </div>
-                  <h3 className="text-2xl font-black text-[var(--color-navy)] mb-2">Você está na Lista!</h3>
-                  <p className="text-slate-600">
-                    Sua vaga VIP para garantir o perfil <strong className="text-slate-800">/{result?.username.replace('@', '')}</strong> foi reservada. Avisaremos você em breve!
-                  </p>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 mb-4">
-                    <Sparkles className="w-5 h-5 text-[var(--color-gold)]" />
-                    <h3 className="text-xl font-black text-[var(--color-navy)]">Destrave o Plano PRO</h3>
-                  </div>
-                  <p className="text-sm text-slate-600 mb-6">
-                    Seja um dos primeiros a ter sua página exclusiva <strong className="text-[var(--color-navy)]">soujogadorcaro.pro/{result?.username.replace('@', '')}</strong> e comece a fechar patrocínios na sua cidade.
-                  </p>
-                  
-                  <form onSubmit={handleVipSubmit} className="flex flex-col gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-slate-500 mb-1.5 uppercase">E-mail ou WhatsApp</label>
-                      <input 
-                        type="text" 
-                        placeholder="Ex: 11999999999 ou email@exemplo.com"
-                        className="w-full text-sm rounded-xl border border-slate-200 px-4 py-3 focus:border-[var(--color-gold)] focus:ring-1 focus:ring-[var(--color-gold)] outline-none transition-all"
-                        value={vipContact}
-                        onChange={e => setVipContact(e.target.value)}
-                        required
-                      />
-                    </div>
-                    <button 
-                      type="submit" 
-                      disabled={vipStatus === 'loading'}
-                      className="w-full py-3.5 rounded-xl font-bold text-[var(--color-navy)] bg-[var(--color-gold)] hover:bg-[var(--color-gold-hover)] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
-                    >
-                      {vipStatus === 'loading' ? 'Registrando...' : 'Garantir Minha Vaga VIP'}
-                    </button>
-                  </form>
-                </>
-              )}
-            </div>
-          </div>
-        )}
-
+    <section id="calculadora" className="relative w-full py-24 md:py-32 px-4 bg-night border-y border-white/5 overflow-hidden">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute top-1/3 right-0 w-[600px] h-[600px] rounded-full bg-gold/10 blur-[140px]" />
+        <div className="absolute inset-0 bg-pitch-grid" />
       </div>
+
+      <div className="relative max-w-6xl mx-auto">
+        <div className="reveal text-center mb-14">
+          <p className="text-xs font-bold text-gold uppercase tracking-[0.25em] mb-4">Calculadora de Passe</p>
+          <h2 className="font-display font-black uppercase text-5xl md:text-7xl leading-[0.88] tracking-tight text-white mb-5">
+            Qual a sua <span className="text-gold-gradient">AURA e Valor?</span>
+          </h2>
+          <p className="text-slate-400 max-w-lg mx-auto">
+            Descubra o seu potencial de patrocínio local e o valor do seu Passe Digital baseado em dados reais.
+          </p>
+        </div>
+
+        <div className="grid lg:grid-cols-[minmax(0,1fr)_380px] gap-12 lg:gap-16 items-start max-w-5xl mx-auto">
+          {/* FORM */}
+          <form onSubmit={calculate} className="w-full flex flex-col gap-6 rounded-3xl bg-surface/80 backdrop-blur border border-white/10 p-5 sm:p-8 shadow-2xl shadow-black/40">
+            <fieldset className="flex flex-col gap-4">
+              <legend className="flex items-center gap-2 mb-4 font-display font-extrabold uppercase text-lg tracking-wide text-white">
+                <span className="w-6 h-6 rounded-md bg-gold text-gold-ink text-sm font-black flex items-center justify-center">1</span>
+                Sobre você
+              </legend>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <Field id="calc-name" label="Nome Completo">
+                  <input id="calc-name" type="text" placeholder="Ex: Lucas Souza" className={inputClass} value={name} onChange={e => setName(e.target.value)} required />
+                </Field>
+                <Field id="calc-username" label="@ Instagram">
+                  <input
+                    id="calc-username"
+                    type="text"
+                    placeholder="Ex: @lucas_camisa10"
+                    className={inputClass}
+                    value={username}
+                    onChange={e => {
+                      let val = e.target.value;
+                      if (val.length > 0 && !val.startsWith('@')) {
+                        val = '@' + val;
+                      }
+                      setUsername(val);
+                    }}
+                    required
+                  />
+                </Field>
+                <Field id="calc-position" label="Posição">
+                  <select id="calc-position" className={`${inputClass} cursor-pointer`} value={position} onChange={e => setPosition(e.target.value)}>
+                    <option>Goleiro</option>
+                    <option>Zagueiro</option>
+                    <option>Lateral</option>
+                    <option>Volante</option>
+                    <option>Meio-Campo</option>
+                    <option>Meia Atacante</option>
+                    <option>Atacante</option>
+                  </select>
+                </Field>
+                <Field id="calc-category" label="Categoria">
+                  <select id="calc-category" className={`${inputClass} cursor-pointer`} value={category} onChange={e => setCategory(e.target.value)}>
+                    <option>Amador / Várzea</option>
+                    <option>Sub-17</option>
+                    <option>Sub-20</option>
+                    <option>Universitário</option>
+                    <option>Semi-Profissional</option>
+                  </select>
+                </Field>
+              </div>
+            </fieldset>
+
+            <fieldset className="flex flex-col gap-4">
+              <legend className="flex items-center gap-2 mb-4 font-display font-extrabold uppercase text-lg tracking-wide text-white">
+                <span className="w-6 h-6 rounded-md bg-gold text-gold-ink text-sm font-black flex items-center justify-center">2</span>
+                Seus números
+              </legend>
+              <div className="grid grid-cols-[2fr_1fr_1fr] gap-3 sm:gap-4">
+                <Field id="calc-followers" label="Seguidores">
+                  <input id="calc-followers" type="number" inputMode="numeric" placeholder="Ex: 45000" className={inputClass} value={followers} onChange={(e) => setFollowers(e.target.value)} required />
+                </Field>
+                <Field id="calc-age" label="Idade">
+                  <input id="calc-age" type="number" inputMode="numeric" placeholder="19" className={inputClass} value={age} onChange={(e) => setAge(e.target.value)} required />
+                </Field>
+                <Field id="calc-jersey" label="Camisa">
+                  <input id="calc-jersey" type="number" inputMode="numeric" placeholder="10" className={inputClass} value={jerseyNumber} onChange={(e) => setJerseyNumber(e.target.value)} required />
+                </Field>
+              </div>
+            </fieldset>
+
+            {/* Expandable Field Data Section */}
+            <div className={`rounded-2xl border transition-colors ${showFieldData ? 'border-gold/30 bg-gold/[0.04]' : 'border-white/10 border-dashed'}`}>
+              <button
+                type="button"
+                onClick={() => setShowFieldData(!showFieldData)}
+                aria-expanded={showFieldData}
+                aria-controls="calc-field-data"
+                className="w-full px-4 py-3.5 flex items-center justify-between gap-3 text-left rounded-2xl hover:bg-white/[0.03] transition-colors"
+              >
+                <span className="flex items-center gap-3">
+                  <span className="text-lg" aria-hidden="true">⚽</span>
+                  <span>
+                    <span className="block text-sm font-bold text-white">Adicionar Dados de Campo</span>
+                    <span className="block text-xs text-slate-500">Opcional — aumenta sua AURA e o valor do passe</span>
+                  </span>
+                </span>
+                <ChevronDown className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-300 ${showFieldData ? 'rotate-180' : ''}`} />
+              </button>
+
+              <div id="calc-field-data" className={`grid transition-[grid-template-rows] duration-300 ease-out ${showFieldData ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
+                <div className="overflow-hidden">
+                  <div className="px-4 pb-4 pt-1 grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <Field id="calc-matches" label="Partidas">
+                      <input id="calc-matches" type="number" inputMode="numeric" placeholder="82" className={inputClass} value={matches} onChange={e => setMatches(e.target.value)} tabIndex={showFieldData ? 0 : -1} />
+                    </Field>
+                    <Field id="calc-goals" label="Gols">
+                      <input id="calc-goals" type="number" inputMode="numeric" placeholder="47" className={inputClass} value={goals} onChange={e => setGoals(e.target.value)} tabIndex={showFieldData ? 0 : -1} />
+                    </Field>
+                    <Field id="calc-assists" label="Assist.">
+                      <input id="calc-assists" type="number" inputMode="numeric" placeholder="23" className={inputClass} value={assists} onChange={e => setAssists(e.target.value)} tabIndex={showFieldData ? 0 : -1} />
+                    </Field>
+                    <Field id="calc-trophies" label="Títulos">
+                      <input id="calc-trophies" type="number" inputMode="numeric" placeholder="3" className={inputClass} value={trophies} onChange={e => setTrophies(e.target.value)} tabIndex={showFieldData ? 0 : -1} />
+                    </Field>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {error && (
+              <div role="alert" className="p-3.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-200 text-sm flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
+                {error}
+              </div>
+            )}
+
+            <button
+              type="submit"
+              disabled={isCalculating}
+              className="group w-full py-4 font-bold text-lg rounded-xl text-gold-ink bg-gradient-to-b from-gold-light to-gold shadow-[0_10px_40px_-10px_rgba(242,193,78,0.7)] hover:shadow-[0_14px_50px_-8px_rgba(242,193,78,0.85)] hover:-translate-y-0.5 transition-all flex justify-center items-center gap-2 disabled:opacity-60 disabled:cursor-wait disabled:hover:translate-y-0"
+            >
+              {isCalculating ? <Loader2 className="w-5 h-5 animate-spin" /> : <Zap className="w-5 h-5 group-hover:scale-110 transition-transform" />}
+              {isCalculating ? 'Calculando Scout...' : result ? 'Recalcular Meu Card' : 'Gerar Meu Card'}
+            </button>
+
+            <p className="flex items-center justify-center gap-1.5 text-xs text-slate-500 -mt-2">
+              <Lock className="w-3 h-3" /> Grátis e sem cadastro. Seus dados não são compartilhados.
+            </p>
+          </form>
+
+          {/* CARD AREA */}
+          <div ref={cardAreaRef} className="flex flex-col items-center scroll-mt-24">
+            <div className="flex items-center gap-2 mb-5 text-xs font-bold uppercase tracking-[0.2em]">
+              {result ? (
+                <><CheckCircle className="w-4 h-4 text-pitch" /><span className="text-pitch">Seu card está pronto</span></>
+              ) : (
+                <><span className="w-2 h-2 rounded-full bg-gold animate-live-pulse" /><span className="text-slate-400">Pré-visualização ao vivo</span></>
+              )}
+            </div>
+
+            <div className="relative">
+              <div className={`absolute inset-0 m-auto w-64 h-64 rounded-full blur-[80px] transition-colors duration-700 ${result ? 'bg-gold/40' : 'bg-gold/10'}`} />
+              <div key={result ? `${result.name}-${result.ovr}-${result.passValue}` : 'preview'} className={`relative ${result ? 'animate-slide-up' : ''} ${isCalculating ? 'animate-pulse' : ''}`}>
+                <PlayerCard ref={cardRef} data={cardData} className={result ? '' : 'saturate-[0.6]'} />
+                {/* Sheen on reveal */}
+                {result && (
+                  <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-[28px]">
+                    <div className="absolute inset-y-0 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-sheen" />
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {result ? (
+              <div className="w-full max-w-[340px] flex flex-col gap-4 mt-6 animate-slide-up [animation-delay:150ms]">
+                <button
+                  onClick={handleDownloadCard}
+                  disabled={isDownloading}
+                  className="w-full bg-white text-ink hover:bg-gold-light py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-lg disabled:opacity-70"
+                >
+                  {isDownloading ? (
+                    <><Loader2 className="w-5 h-5 animate-spin" /> Gerando Imagem...</>
+                  ) : (
+                    <><Share2 className="w-5 h-5" /> Compartilhar Card</>
+                  )}
+                </button>
+
+                {result.mode === 1 && (
+                  <div className="rounded-xl border border-gold/25 bg-gold/[0.06] px-4 py-3 text-xs text-center">
+                    <p className="font-bold text-gold mb-1 flex items-center justify-center gap-1.5">
+                      <Trophy className="w-3.5 h-3.5" /> Destrave sua AURA Completa!
+                    </p>
+                    <p className="text-slate-400">Adicione seus dados de campo no formulário para aumentar seu Passe e liberar todas as estatísticas do card.</p>
+                  </div>
+                )}
+
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-surface-2 to-surface border border-gold/20 p-5 group">
+                  <div className="absolute -right-8 -top-8 w-32 h-32 bg-gold/15 rounded-full blur-2xl group-hover:bg-gold/25 transition-colors" />
+                  <div className="relative flex items-center gap-2 mb-2">
+                    <Sparkles className="w-4 h-4 text-gold" />
+                    <span className="text-[10px] font-black text-gold uppercase tracking-[0.2em]">Em Breve: Plano PRO</span>
+                  </div>
+                  <p className="relative text-xs text-slate-400 leading-relaxed mb-4">
+                    O maior facilitador na busca de patrocínios e valorização da sua imagem. Tenha sua página exclusiva <strong className="text-white">soujogadorcaro.pro/{handle}</strong> com a recuperação real dos seus dados nas redes sociais.
+                  </p>
+                  <button
+                    onClick={() => setIsVipModalOpen(true)}
+                    className="relative w-full py-2.5 rounded-lg bg-gold/10 border border-gold/40 text-gold text-xs uppercase tracking-wider font-bold hover:bg-gold hover:text-gold-ink transition-colors"
+                  >
+                    Entrar na Lista VIP
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-6 max-w-[300px] text-center text-sm text-slate-500">
+                Preencha seus dados e clique em <span className="text-slate-300 font-semibold">Gerar Meu Card</span> para revelar sua AURA.
+              </p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Modal da Lista VIP */}
+      {isVipModalOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-ink/80 backdrop-blur-md animate-fade-in"
+          onClick={closeVipModal}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="vip-title"
+            className="relative w-full max-w-md overflow-hidden rounded-3xl bg-surface border border-white/10 p-7 shadow-2xl animate-slide-up"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="absolute -top-20 -right-20 w-56 h-56 rounded-full bg-gold/15 blur-3xl pointer-events-none" />
+            <button
+              onClick={closeVipModal}
+              aria-label="Fechar"
+              className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {vipStatus === 'success' ? (
+              <div className="relative text-center py-6">
+                <div className="w-16 h-16 bg-pitch/15 border border-pitch/30 rounded-full flex items-center justify-center mx-auto mb-5">
+                  <CheckCircle className="w-8 h-8 text-pitch" />
+                </div>
+                <h3 id="vip-title" className="font-display font-black uppercase text-3xl text-white mb-2">Você está na Lista!</h3>
+                <p className="text-slate-400">
+                  Sua vaga VIP para garantir o perfil <strong className="text-white">/{handle}</strong> foi reservada. Avisaremos você em breve!
+                </p>
+              </div>
+            ) : (
+              <div className="relative">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-5 h-5 text-gold" />
+                  <h3 id="vip-title" className="font-display font-black uppercase text-3xl text-white">Destrave o Plano PRO</h3>
+                </div>
+                <p className="text-sm text-slate-400 mb-6">
+                  Seja um dos primeiros a ter sua página exclusiva <strong className="text-gold">soujogadorcaro.pro/{handle}</strong> e comece a fechar patrocínios na sua cidade.
+                </p>
+
+                <form onSubmit={handleVipSubmit} className="flex flex-col gap-4">
+                  <Field id="vip-contact" label="E-mail ou WhatsApp">
+                    <input
+                      id="vip-contact"
+                      type="text"
+                      autoFocus
+                      placeholder="Ex: 11999999999 ou email@exemplo.com"
+                      className={inputClass}
+                      value={vipContact}
+                      onChange={e => setVipContact(e.target.value)}
+                      required
+                    />
+                  </Field>
+                  {vipError && (
+                    <p role="alert" className="flex items-center gap-2 text-sm text-red-300">
+                      <AlertCircle className="w-4 h-4 shrink-0" /> {vipError}
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    disabled={vipStatus === 'loading'}
+                    className="w-full py-3.5 rounded-xl font-bold text-gold-ink bg-gradient-to-b from-gold-light to-gold hover:shadow-[0_10px_40px_-10px_rgba(242,193,78,0.8)] transition-all flex items-center justify-center gap-2 disabled:opacity-70"
+                  >
+                    {vipStatus === 'loading' ? <><Loader2 className="w-4 h-4 animate-spin" /> Registrando...</> : 'Garantir Minha Vaga VIP'}
+                  </button>
+                </form>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }
